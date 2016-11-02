@@ -22,27 +22,33 @@ console.assert(total === 24)
 // ----------------------------
 
 function reduce(array, callback){
-  var root = reduce(array,callback);
-      root.reduce(a,v){
-        return a + v;
-  },);
+  var accumulator;
+  forEach( array, function(value, i, origArray){
+    if (i === 0) {
+      accumulator = value;
+    } else {
+      accumulator = callback(accumulator, value, i, origArray);
+    }
+  });
+  return accumulator
 }
 
 // tests
 // ---
 console.assert(
-    reduce([1, 2, 3, 4], function(a, v){ return a*v }) === 24
-)
-
-// ----------------------------
-// using forEach() from above, write your own map()
-// that takes an array and a function
-// ----------------------------
-
+    reduce([1, 2, 3, 4], function(a, v){ return a*v }) === 24)
+//
+// // ----------------------------
+// // using forEach() from above, write your own map()
+// // that takes an array and a function
+// // ----------------------------
+//
 function map(array, callback){
-    var map = root.map(function(people){
-      return root;
-    })
+  var mappedArray = [];
+    forEach(array, function(value, i, origArray){
+      mappedArray.push(callback(value, i ,origArray));
+    });
+    return mappedArray;
 }
 
 // tests
@@ -53,15 +59,21 @@ console.assert(squares[1] === 4)
 console.assert(squares[2] === 9)
 console.assert(squares[3] === 16)
 
-// ----------------------------
-// using reduce() from above, write your own filter()
-// that takes an array and a function
-// ----------------------------
-
+// // ----------------------------
+// // using reduce() from above, write your own filter()
+// // that takes an array and a function
+// // ----------------------------
+//
 function filter(array, callback){
-    var filter = map.filter(function(people){
+  var filteredArray = [];
+  reduce(array, function(a, v, i, origArray){
+    var resultOfCallback = callback(v, i, origArray);
+    if (resultOfCallback){
+      filteredArray.push(v);
+    }
+  })
+  return filteredArray;
 
-    },);
 }
 
 // tests
@@ -71,13 +83,16 @@ console.assert(evens[0] === 2)
 console.assert(evens[1] === 4)
 
 
-// ----------------------------
-// using reduce() from above, write your own sum()
-// that adds up all arguments to sum (note: variadic behavior)
-// ----------------------------
-
+// // ----------------------------
+// // using reduce() from above, write your own sum()
+// // that adds up all arguments to sum (note: variadic behavior)
+// // ----------------------------
+//
 function sum(){
-
+  var args = [].slice.call(arguments);
+   return reduce(args, function(a, value){
+    return a + value;
+  });
 }
 
 // tests
@@ -86,11 +101,11 @@ console.assert(sum(1, 2, 3) === 6)
 console.assert(sum(1, 2, 3, 4) === 10)
 console.assert(sum(1, 2, 3, 4, 5) === 15)
 
-// ----------------------------
-// using Array.sort(), sort the following array
-// of people by name
-// ----------------------------
-
+// // ----------------------------
+// // using Array.sort(), sort the following array
+// // of people by name
+// // ----------------------------
+//
 var names = [
     {name:"Matt", alma_mater:"Univ of Texas - Austin"},
     {name:"Brian", alma_mater:"Texas A&M"},
@@ -98,7 +113,7 @@ var names = [
 ]
 
 names.sort(function(a, b){
-    // YOUR CODE HERE
+    return a.name > b.name;
 })
 
 // tests
@@ -107,14 +122,14 @@ console.assert(names[0].name === "Brian")
 console.assert(names[1].name === "Jesse")
 console.assert(names[2].name === "Matt")
 
-// ----------------------------
-// Using Array.map(), Array.filter(), and Array.sort() on the
-// array below:
-// - filter for customers whose first-names start with 'J',
-// - map to their fullnames,
-// - and then sort the items alphabetically by fullname
-// ----------------------------
-
+// // ----------------------------
+// // Using Array.map(), Array.filter(), and Array.sort() on the
+// // array below:
+// // - filter for customers whose first-names start with 'J',
+// // - map to their fullnames,
+// // - and then sort the items alphabetically by fullname
+// // ----------------------------
+//
 var customers = [
     { first: 'Joe', last: 'Blogs'},
     { first: 'John', last: 'Smith'},
@@ -123,16 +138,19 @@ var customers = [
 ]
 
 var results = customers
-    .filter(function(){
-        // YOUR CODE HERE
+    .filter(function(v){
+      return v.first[0] === 'J'
     })
-    .map(function(){
-        // YOUR CODE HERE
+    .map(function(v ,i, origArray){
+      var newCustomer = v;
+      newCustomer.fullname = v.first + " " + v.last;
+      return newCustomer
     })
-    .sort(function(){
-        // YOUR CODE HERE
+    .sort(function(a,b){
+      return a.fullname > b.fullname;
     })
 
+    console.log(results);
 // tests
 // ---
 console.assert(results[0].fullname === "Jack White")
